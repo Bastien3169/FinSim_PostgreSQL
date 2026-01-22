@@ -1,0 +1,20 @@
+# Utilise une image légère avec Python
+FROM python:3.11
+
+# Définir le répertoire de travail ds le conteneur 
+WORKDIR /app
+
+# Copier uniquement le fichier requirements.txt en premier (pour cache Docker efficace)
+COPY requirements.txt .
+
+# Installer les dépendances Python listées dans requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copie le "." va copier tout ce qu'il y a dans mon dossier racine vers le dossier /app du conteneur 
+COPY . /app
+
+# Port exposé
+EXPOSE 8501
+
+# Lancer Streamlit et exposer le port 8501 et choisir l'adresse
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]

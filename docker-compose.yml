@@ -1,0 +1,19 @@
+services:
+  app: # nom du service
+    build:
+      context: . # définit le répertoire pour builder l'image Docker "app"
+      dockerfile: Dockerfile  # inutile si Dockerfile s'appelle bien Dockerfile ici 
+    image: app_strealite_image:latest # nom de l'image Docker qui va être créée via le Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - data_volume:/app/data.db  # volume docker pour données statiques
+      - user_volume:/app/user.db    # volume docker pour données dynamiques
+    restart: unless-stopped # redémarre le conteneur sauf si on l'arrête manuellement
+
+volumes:
+  data_volume:
+  user_volume:
+
+# Pour lancer : docker-compose up -d
+# Pour arrêter : docker-compose down  

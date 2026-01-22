@@ -1,0 +1,224 @@
+/* Reset Streamlit */
+html, body, #root, .main-container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+/* Supprime le padding top du container principal */
+div.stMainBlockContainer.block-container {
+    padding-top: 3rem !important;  /* ajuste à 0 ou 0.5rem si besoin */
+}
+
+/* Police */
+p {
+    font-weight: 600;  /* Rendre le texte plus épais (plus gras) */
+    text-align: justify;  /* Alignement justifié du texte */
+    color: #f0f0f0;  /* Couleur du texte moins blanche, couleur gris foncé */
+    padding: 10px;  /* Espacement autour du texte */
+    border-radius: 5px;  /* Coins arrondis */
+    line-height: 1.6;  /* Espacement entre les lignes */
+}
+
+/* Image centrée */
+.center-image {
+    display: block !important;
+    margin: 20px auto !important;
+    width: 350px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+}
+
+/* Styles texte */
+.main-container h1 {
+    color: #00B388;
+    padding: 10px;
+    margin: 20px auto;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    width: 600px;
+    border: 2px solid #A4F6D2;
+    border-radius: 10px;
+}
+
+
+/* Cache l'élément des div h1 qui est à droite */
+span[data-testid="stHeaderActionElements"] {
+display: none !important;
+}
+
+.main-container h2 {
+    padding: 8px;
+    margin-top: 50px !important;
+    margin-bottom: 10px !important;
+    font-family: 'Roboto', sans-serif;
+    border-bottom: 2px solid #00B388;
+}
+
+.main-container h3 {
+    display: inline-block; /* Limite la largeur du soulignement au texte */
+    padding: 8px;
+    margin: 10px auto;
+    font-family: 'Roboto', sans-serif;
+    color: #00B388; /* Couleur du texte */
+}
+
+
+.stButton>button {
+    background-color: #0f1116;
+    color: white;
+    /*padding: 10px 20px;*/
+    border-radius: 5px;
+    cursor: pointer;
+    border-color: #00B388;
+}
+
+.stButton>button:hover {
+    background-color: #00B388;  
+    color: black !important;    /* Couleur du texte moins blanche, couleur gris foncé */
+    border-color: #00B388;
+}
+
+/* Sidebar par défaut (desktop) */
+section[data-testid="stSidebar"] {
+    width: 200px !important;
+    min-width: 200px !important;
+    max-width: 200px !important;
+    transition: none;
+}
+
+section[data-testid="stSidebar"] a span {
+    font-size: 1rem !important;
+}
+
+/* Span des écriture ds sidebar */
+.st-emotion-cache-1dj0hjr.e1tphpha6 {
+    color: #00B388;  /* Couleur verte */
+    display: block;  /* Assure que le span se comporte comme un bloc */
+    text-align: center;  /* Centre le texte horizontalement */
+    width: 100%;  /* Prend toute la largeur disponible */
+}
+
+
+
+/* Réduire l'espace de l'en-tête de la sidebar */
+div[data-testid="stSidebarHeader"] {
+    height: 40px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Fixer la div en haut de la page */
+div.st-emotion-cache-1y9tyez {
+    position: fixed;  /* Fixer la div en haut de la page */
+    top: 0;           /* Placer la div tout en haut */
+    left: 0;          /* Optionnel : placer la div à gauche */
+    width: 100%;      /* Pour qu'elle occupe toute la largeur de la page */
+    z-index: 9999;    /* S'assurer qu'elle soit au-dessus des autres éléments */
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #111;
+    color: #888;
+    text-align: center;
+    padding: 4px 0;
+    font-size: 12px;
+    border-top: 1px solid #333;
+}
+
+
+/* ========= RESPONSIVE ========= */
+
+/* Responsiveness pour les écrans petits (max-width: 768px) */
+@media (max-width: 768px) {
+
+    /* Cacher le header sur les petits écrans */
+    header {
+        visibility: hidden;  /* Cacher l'en-tête sur les petits écrans */
+    }
+
+    .footer {
+        display: none;  /* Cacher footer sur les petits écrans */
+    }
+    
+
+    /* Réduire la largeur de la sidebar */
+    section[data-testid="stSidebar"] {
+        width: 120px !important;
+        min-width: 120px !important;
+        max-width: 120px !important;
+    }
+
+    /* Réduire la taille des textes dans la sidebar */
+    section[data-testid="stSidebar"] a span {
+        font-size: 0.7rem !important;
+    }
+
+    /* Réduire l'en-tête de la sidebar pour les petits écrans */
+    div[data-testid="stSidebarHeader"] {
+        height: 30px !important;  /* Réduire la hauteur de l'en-tête */
+    }
+
+    /* Ajuster l'icône dans la sidebar pour les petits écrans */
+    div.st-emotion-cache-1y9tyez svg {
+        height: 20px !important;
+        width: 20px !important;
+    }
+
+    .main-container h1 {
+        font-size: 1.5rem !important;  /* Utilisation de rem pour plus de flexibilité */
+        padding-left: 10px;
+        width: 300px;
+    }
+
+    .main-container h2 {
+        font-size: 1.2rem !important;
+        text-align: center;
+    }
+
+    .main-container h3 {
+    font-size: 1.2rem !important;
+    text-align: center;
+    }
+
+
+    p {
+        font-size: 0.7rem !important;
+        padding: 6px !important;
+    }
+
+    .stButton > button {
+        padding: 8px 16px !important;
+        font-size: 0.7rem !important;
+    }
+    
+    /* Cache l'élément des div h1 qui est à droite */
+    span[data-testid="stHeaderActionElements"] {
+    display: none;
+    }
+
+    .center-image {
+        width: 40% !important;  /* Réduire la largeur à 60% sur petits écrans */
+
+    }
+
+    .navitem, .settingsNav {
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    /* Centrer les boutons secondaires */
+    button[data-testid="stBaseButton-secondary"] {
+    display: block;
+    margin: 20px auto;
+    }
+
+
