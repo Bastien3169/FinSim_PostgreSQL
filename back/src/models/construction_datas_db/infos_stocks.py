@@ -23,7 +23,7 @@ def infos_stocks(dossier_csv, csv_bdd) :
     df_concat = pd.concat(dfs, ignore_index=True)
     
     # Enlever les colonnes qui ne ne veullent plus rien dire ici
-    df_final = df_concat.drop(columns=["Nom_Indice", "Nombres_Entreprises"])
+    df_final = df_concat.drop(columns=["nom_indice", "nombres_entreprises"])
     
     # Sauvegarde du fichier fusionné sans doublons
     df_final.to_csv(os.path.join(csv_bdd, "stocks_infos.csv"), index=False, encoding="utf-8")
@@ -33,4 +33,3 @@ def infos_stocks(dossier_csv, csv_bdd) :
 
 if __name__ == "__main__":
     infos_stocks = infos_stocks(dossier_csv = "csv/", csv_bdd = "csv/csv_bdd/") #Appel de la fonction
-    display(infos_stocks)

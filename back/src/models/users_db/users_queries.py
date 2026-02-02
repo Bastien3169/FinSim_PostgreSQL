@@ -242,8 +242,6 @@ class AuthManager(BaseDBManager):
         token = result
         
         try:
-            # À décommenter quand le service mail est prêt
-            # envoie_password_reset_email(email, token)
             print(f"🔗 Token de réinitialisation : {token}")
             return True, "✅ Email de réinitialisation envoyé !"
         except Exception as e:
@@ -282,7 +280,8 @@ class AuthManager(BaseDBManager):
                 text("DELETE FROM password_resets WHERE user_id = :user_id"),
                 {"user_id": user_id}
             )
-        
+
+
         return True, "✅ Mot de passe réinitialisé avec succès."
 
 ######################################################## 

@@ -1,0 +1,10 @@
+source .venv/bin/activate
+
+# Back lancement
+psql -h localhost -U postgres -d finsim 
+
+# Front lancement
+python -m streamlit run main.py 
+
+# Init db
+python init_db.py  

@@ -7,7 +7,7 @@ def recuperer_et_clean_indices(csv_bdd):
 
     # Charger les tickers
     df_infos = pd.read_csv(os.path.join(csv_bdd, "indices_infos.csv"), encoding="utf-8")
-    tickers_yahoo = df_infos["Ticker_Indice_Yf"].dropna().unique().tolist()
+    tickers_yahoo = df_infos["ticker_indice_yf"].dropna().unique().tolist()
 
     dfs = []
 
@@ -20,13 +20,13 @@ def recuperer_et_clean_indices(csv_bdd):
             hist = ticker.history(period="max", interval="1mo")
         
             # Ajoute la colonne "Short_Name_Indice"
-            hist['Short_Name_Indice'] = ticker.info.get("shortName", "N/A")
+            hist['short_name_indice'] = ticker.info.get("shortName", "N/A")
         
             if hist.empty:
                 print(f"⚠️ Historique vide pour {i}.")
                 continue
 
-            hist['Ticker_Indice_Yf'] = i
+            hist['ticker_indice_yf'] = i
             dfs.append(hist)
               
         except Exception as e:
@@ -36,7 +36,7 @@ def recuperer_et_clean_indices(csv_bdd):
     # Si aucun historique n'a été récupéré, crée un DataFrame vide avec les bonnes colonnes
     if not dfs:
         print("❌ Aucun historique récupéré, création d'un fichier CSV vide.")
-        df = pd.DataFrame(columns=["Date", "Close", "Ticker_Indice_Yf", "Short_Name_Indice"])
+        df = pd.DataFrame(columns=["date", "close", "ticker_indice_yf", "short_name_indice"])
         df.to_csv(os.path.join(csv_bdd, "historique_indices.csv"), index=False, encoding="utf-8")
         return df
 
@@ -46,21 +46,24 @@ def recuperer_et_clean_indices(csv_bdd):
 
     ############################################ NETTOYAGE DATAFRAME ############################################
     
+    # après concat des dfs et reset_index
+    df.reset_index(inplace=True)
+
     # Supprimer colonnes inutiles
     df = df.drop(columns=["Open", "High", "Low", "Volume", "Dividends", "Stock Splits"], errors="ignore")
 
-    # Convertir la colonne "Date" en format datetime et reformater en "JJ-MM-AAAA"
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce", utc=True).dt.strftime("%d-%m-%Y")
-
+    # Convertir l’index date (ou la colonne Date si reset_index) en datetime et garder que la date
+    df["date"] = pd.to_datetime(df["Date"], utc=True).dt.date
 
     # Arrondir la colonne "Close"
-    df["Close"] = df["Close"].round(4)
+    df["close"] = df["Close"].round(4)
 
-    # Réorganiser les colonnes dans l'ordre souhaité
-    df = df[["Date", "Close", "Ticker_Indice_Yf", "Short_Name_Indice"]]
+    # Réorganiser colonnes
+    df = df[["date", "close", "ticker_indice_yf", "short_name_indice"]]
 
-    # Sauvegarde
+    # Sauvegarder CSV
     df.to_csv(os.path.join(csv_bdd, "historique_indices.csv"), index=False, encoding="utf-8")
+
     print(f"✅ Données récupérées et nettoyées enregistrées dans dossier")
     
     return df

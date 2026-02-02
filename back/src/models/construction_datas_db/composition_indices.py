@@ -7,7 +7,7 @@ from . import scraping_tickers  # Import de ta fonction scraping
 def get_stock_data(tickers_stocks_yf, nom_indice, ticker_indice_yf, file_path):
     
     # Création du DataFrame initial avec une colonne vide
-    df = pd.DataFrame({'Ticker_Stocks_Yf': tickers_stocks_yf})
+    df = pd.DataFrame({'ticker_stocks_yf': tickers_stocks_yf})
 
     # Récupérer toutes les données en une seule requête
     tickers_obj = yf.Tickers(" ".join(tickers_stocks_yf))  # Récupération groupée des tickers
@@ -48,26 +48,26 @@ def get_stock_data(tickers_stocks_yf, nom_indice, ticker_indice_yf, file_path):
         time.sleep(0.5)  # Petite pause pour éviter le blocage
 
     # Ajout des colonnes au DataFrame
-    df['Short_Name_Stocks'] = short_name_stocks
-    df['Pays_Stocks'] = pays_stocks
-    df['Place_Boursiere'] = place_boursiere
-    df['Secteur_Activite'] = secteur_activite
-    df['Capitalisation_Boursiere'] = capitalisation_boursiere
-    df['Ticker_Stocks'] = tickers_stocks
-    df['Nom_Indice'] = nom_indice
-    df['Nombres_Entreprises'] = len(short_name_stocks)
-    df['Ticker_Indice_Yf'] = ticker_indice_yf
+    df['short_name_stocks'] = short_name_stocks
+    df['pays_stocks'] = pays_stocks
+    df['place_boursiere'] = place_boursiere
+    df['secteur_activite'] = secteur_activite
+    df['capitalisation_boursiere'] = capitalisation_boursiere
+    df['ticker_stocks'] = tickers_stocks
+    df['nom_indice'] = nom_indice
+    df['nombres_entreprises'] = len(short_name_stocks)
+    df['ticker_indice_yf'] = ticker_indice_yf
 
     # Calcul de la capitalisation boursière totale
-    total_capitalisation = df['Capitalisation_Boursiere'].fillna(0).sum()
+    total_capitalisation = df['capitalisation_boursiere'].fillna(0).sum()
 
     # Calcul pondération
-    df['Ponderation'] = round((df['Capitalisation_Boursiere'] / total_capitalisation) * 100, 2)
+    df['ponderation'] = round((df['capitalisation_boursiere'] / total_capitalisation) * 100, 2)
 
     # Réorganisation des colonnes
     df = df[
-        ['Short_Name_Stocks', 'Ticker_Stocks_Yf', 'Ticker_Stocks', 'Secteur_Activite', 'Pays_Stocks', 'Place_Boursiere', 
-         'Capitalisation_Boursiere', 'Nom_Indice', 'Ticker_Indice_Yf', 'Nombres_Entreprises', 'Ponderation']
+        ['short_name_stocks', 'ticker_stocks_yf', 'ticker_stocks', 'secteur_activite', 'pays_stocks', 'place_boursiere', 
+         'capitalisation_boursiere', 'nom_indice', 'ticker_indice_yf', 'nombres_entreprises', 'ponderation']
     ]
 
     # Exportation en CSV
@@ -77,7 +77,7 @@ def get_stock_data(tickers_stocks_yf, nom_indice, ticker_indice_yf, file_path):
     return df
 
 
-def csv_indices(dossier_csv = "csv/"):
+def csv_indices(dossier_csv = "csv"):
     
     # Récupérer les tickers via scraping_tickers.all_tickers_yf()
     tickers_yf = scraping_tickers.all_tickers_yf()
@@ -95,11 +95,11 @@ def csv_indices(dossier_csv = "csv/"):
     df_belgique = get_stock_data(tickers_yf["Belgique20"], "BEL 20", "^BFX", os.path.join(dossier_csv, "composition_belgique.csv"))
     df_pays_bas = get_stock_data(tickers_yf["Paysbas25"], "AEX-Index", "^AEX", os.path.join(dossier_csv, "composition_paysbas.csv"))
     df_finlande = get_stock_data(tickers_yf["Finlande25"], "OMX Helsinki 25", "^OMXH25", os.path.join(dossier_csv, "composition_finlande.csv"))
-    df_suede = get_stock_data(tickers_yf["Suède30"], "OMX Stockholm 30", "^OMXS30", os.path.join(dossier_csv, "composition_suede.csv"))
+    df_suede = get_stock_data(tickers_yf["Suède30"], "OMX Stockholm 30", "^OMXSPI", os.path.join(dossier_csv, "composition_suede.csv"))
     df_danemark = get_stock_data(tickers_yf["Danemark25"], "OMX Copenhagen 25", "^OMXC25", os.path.join(dossier_csv, "composition_danemark.csv"))
     df_stoxx50 = get_stock_data(tickers_yf["STOXX50"], "STOXX 50", "^STOXX50E", os.path.join(dossier_csv, "composition_europe50.csv"))
     df_japon225 = get_stock_data(tickers_yf["Japon225"], "Nikkei 225", "^N225", os.path.join(dossier_csv, "composition_japon.csv"))
 
     
 if __name__ == "__main__":
-    indices_csv = csv_indices("csv_test") #Appel de la fonction 
+    indices_csv = csv_indices("csv") #Appel de la fonction 

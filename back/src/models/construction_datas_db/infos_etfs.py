@@ -123,29 +123,27 @@ def infos_etfs(dossier_csv="csv", csv_bdd="csv/csv_bdd"):
     df = pd.DataFrame(rows)
 
     # Colonnes sécurisées
-    df["Short_Name_Etf"] = df.get("shortName")
-    df["Ticker_Etf_Yf"] = df.get("symbol")
-    df["Ticker_Etf"] = df["Ticker_Etf_Yf"].apply(lambda x: x.split(".")[0] if pd.notna(x) else None)
-    df["Devise"] = df.get("currency")
-    df["Place_Boursiere_Etf"] = df.get("exchange")
-    df["Volume_Moyen"] = pd.to_numeric(df.get("averageVolume"), errors="coerce") # Remplace par NaN si erreur de conversion
-    df["Frais_pct"] = pd.to_numeric(df.get("netExpenseRatio"), errors="coerce")
+    df["short_name_etf"] = df.get("shortName")
+    df["ticker_etf_yf"] = df.get("symbol")
+    df["ticker_etf"] = df["ticker_etf_yf"].apply(lambda x: x.split(".")[0] if pd.notna(x) else None)
+    df["devise"] = df.get("currency")
+    df["place_boursiere_etf"] = df.get("exchange")
+    df["volume_moyen"] = pd.to_numeric(df.get("averageVolume"), errors="coerce") # Remplace par NaN si erreur de conversion
+    df["frais_pct"] = pd.to_numeric(df.get("netExpenseRatio"), errors="coerce")
 
     # Gaeder seulement les colonnes utiles
-    df = df[["Short_Name_Etf", "Ticker_Etf_Yf", "Ticker_Etf", "Devise", "Place_Boursiere_Etf", "Volume_Moyen", "Frais_pct",]]
-
+    df = df[["short_name_etf", "ticker_etf_yf", "ticker_etf", "devise", "place_boursiere_etf", "volume_moyen", "frais_pct",]]
     # Supprime les lignes avec Short_Name_Etf vide ou NaN contrairement à df = df.dropna(subset=["Short_Name_Etf"]) que NaN seulement
-    df = df[df["Short_Name_Etf"].notna() & (df["Short_Name_Etf"] != "")]
+    df = df[df["short_name_etf"].notna() & (df["short_name_etf"] != "")]
 
     # Supprime les lignes avec "USD" dans la colonne Devise car c'est des doublons d'ETF déjà présents en EUR avec moins d'encours
-    df = df[df["Devise"] != "USD"]
+    df = df[df["devise"] != "USD"]
 
     # Forcer types numériques si champs vide(important pour SQL)
-    df["Volume_Moyen"] = pd.to_numeric(df["Volume_Moyen"], errors="coerce")
-    df["Frais_pct"] = pd.to_numeric(df["Frais_pct"], errors="coerce")
-
-    df = df.sort_values("Volume_Moyen", ascending=False)
-    df = df.drop_duplicates(subset="Short_Name_Etf", keep="first")
+    df["volume_moyen"] = pd.to_numeric(df["volume_moyen"], errors="coerce")
+    df["frais_pct"] = pd.to_numeric(df["frais_pct"], errors="coerce")
+    df = df.sort_values("volume_moyen", ascending=False)
+    df = df.drop_duplicates(subset="short_name_etf", keep="first")
 
     # Sauvegarde du fichier csv
     df.to_csv(os.path.join(csv_bdd, "etfs_infos.csv"), index=False, encoding="utf-8")

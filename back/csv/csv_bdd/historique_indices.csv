@@ -1,4 +1,4 @@
-Date,Close,Ticker_Indice_Yf,Short_Name_Indice
+date,close,ticker_indice_yf,short_name_indice
 01-01-1992,3223.3999,^DJI,Dow Jones Industrial Average
 01-02-1992,3267.7,^DJI,Dow Jones Industrial Average
 01-03-1992,3235.5,^DJI,Dow Jones Industrial Average

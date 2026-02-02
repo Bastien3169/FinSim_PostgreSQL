@@ -1,0 +1,31 @@
+pyproject.toml
+poetry.lock
+Dockerfile
+
+# Environnements virtuels
+venv/
+.venv/
+
+# Données lourdes
+csv/
+*.csv
+src/models/datas_db/csv/
+*.db
+
+# Caches et artefacts
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+*.log
+.cache/
+.ipynb_checkpoints/
+
+# Git / IDE
+.git/
+*.swp
+*.bak
+*.tmp
+
+
+

@@ -34,15 +34,15 @@ def infos_cryptos(dossier_csv="csv", csv_bdd="csv/csv_bdd"):
     '''
 
     df = pd.DataFrame()
-    df["Short_Name_Cryptos"] = [i["name"] for i in data]
-    df["Ticker_cryptos_Yf"] = [i["symbol"].upper()+ "-USD" for i in data]
-    df["Ticker_Cryptos"] = [i["symbol"] for i in data]
-    df["Prix_actuel"] = [i["current_price"] for i in data]
-    df["Capitalisation_Boursiere"] = [i["market_cap"] for i in data]
-    df["Offre_En_Circulation"] = [i["circulating_supply"] for i in data]
-    df["Offre_En_Circulation"] = df["circulating_supply"].round(1)
-    df["ATH"] = [i["ath"] for i in data]
-    df["MAJ"] = [i["last_updated"].split("T")[0] for i in data]
+    df["short_name_cryptos"] = [i["name"] for i in data]
+    df["ticker_cryptos_yf"] = [i["symbol"].upper()+ "-USD" for i in data]
+    df["ticker_cryptos"] = [i["symbol"] for i in data]
+    df["prix_actuel"] = [i["current_price"] for i in data]
+    df["capitalisation_boursiere"] = [i["market_cap"] for i in data]
+    df["offre_en_circulation_non_arrondie"] = [i["circulating_supply"] for i in data]
+    df["offre_en_circulation"] = df["offre_en_circulation_non_arrondie"].round(1)
+    df["ath"] = [i["ath"] for i in data]
+    df["maj"] = [i["last_updated"].split("T")[0] for i in data]
 
     # Suppression de la ligne "Wrapped SOL" car probleme yfinance (en fait garde toute la ligne où le Short_Name_Cryptos est différents "Wrapped SOL")
     #df = df[df["Short_Name_Cryptos"] != "Wrapped SOL"]

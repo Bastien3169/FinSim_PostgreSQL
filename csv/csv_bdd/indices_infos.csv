@@ -1,10 +1,10 @@
-Short_Name_Indice,Ticker_Indice_Yf,Nom_Indice,Devise,Place_Boursiere_Indice,Nombres_Entreprises
+short_name_indice,ticker_indice_yf,nom_indice,devise,place_boursiere_indice,nombres_entreprises
 Dow Jones Industrial Average,^DJI,Dow Jones 30,USD,DJI,30
 NASDAQ-100,^NDX,NASDAQ 100,USD,NIM,100
 FTSE 100,^FTSE,FTSE 100,GBP,FGI,100
 AEX-Index,^AEX,AEX-Index,EUR,AMS,28
 EURO STOXX 50                 I,^STOXX50E,STOXX 50,EUR,ZRH,50
-OMX Stockholm 30 Index,^OMXS30,OMX Stockholm 30,SEK,NIM,30
+OMX Stockholm 30 Index,^OMXSPI,OMX Stockholm 30,SEK,NIM,30
 BEL 20,^BFX,BEL 20,EUR,BRU,20
 CAC 40,^FCHI,CAC 40,EUR,PAR,40
 OMX Helsinki 25,^OMXH25,OMX Helsinki 25,EUR,STO,25

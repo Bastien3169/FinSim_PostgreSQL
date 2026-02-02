@@ -27,8 +27,8 @@ def infos_indices(dossier_csv, csv_bdd):
 
     
     # Enlever les colonnes qui ne ne veullent plus rien dire ici
-    df = df_final.drop(columns=["Short_Name_Stocks", "Ticker_Stocks_Yf", "Ticker_Stocks", "Secteur_Activite", 
-                                "Pays_Stocks", "Place_Boursiere", "Capitalisation_Boursiere", "Ponderation"])
+    df = df_final.drop(columns=["short_name_stocks", "ticker_stocks_yf", "ticker_stocks", "secteur_activite", 
+                                "pays_stocks", "place_boursiere", "capitalisation_boursiere", "ponderation"])
 
 
     # Listes pour stocker les nouvelles informations
@@ -37,7 +37,7 @@ def infos_indices(dossier_csv, csv_bdd):
     short_name_indice = []
     
     # Récupération des informations via yfinance
-    for i in df["Ticker_Indice_Yf"]:
+    for i in df["ticker_indice_yf"]:
         try:
             info = yf.Ticker(i).info  # Récupération des infos générales
             
@@ -57,13 +57,13 @@ def infos_indices(dossier_csv, csv_bdd):
         short_name_indice.append(shorts_names_indices)
     
     # Ajout des nouvelles colonnes au DataFrame
-    df["Devise"] = devise
-    df["Place_Boursiere_Indice"] = place_boursiere_indice
-    df["Short_Name_Indice"] = short_name_indice
+    df["devise"] = devise
+    df["place_boursiere_indice"] = place_boursiere_indice
+    df["short_name_indice"] = short_name_indice
     
     # Réorganisation des colonnes
     df = df[
-        ["Short_Name_Indice", "Ticker_Indice_Yf", 'Nom_Indice', 'Devise', 'Place_Boursiere_Indice', 'Nombres_Entreprises']
+        ["short_name_indice", "ticker_indice_yf", 'nom_indice', 'devise', 'place_boursiere_indice', 'nombres_entreprises']
         ]
 
     # Sauvegarde du fichier
@@ -75,4 +75,4 @@ def infos_indices(dossier_csv, csv_bdd):
 
 if __name__ == "__main__":
     infos_indices = infos_indices(dossier_csv = "csv/", csv_bdd = "csv/csv_bdd/")
-    display(infos_indices)
+

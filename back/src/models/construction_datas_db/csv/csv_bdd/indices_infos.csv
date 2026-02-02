@@ -1,4 +1,4 @@
-Short_Name_Indice,Ticker_Indice_Yf,Nom_Indice,Devise,Place_Boursiere_Indice,Nombres_Entreprises
+short_name_indice,ticker_indice_yf,nom_indice,devise,place_boursiere_indice,nombres_entreprises
 Dow Jones Industrial Average,^DJI,Dow Jones 30,USD,DJI,30
 OMX Copenhagen 25 Index,^OMXC25,OMX Copenhagen 25,DKK,STO,25
 FTSE 100,^FTSE,FTSE 100,GBP,FGI,99

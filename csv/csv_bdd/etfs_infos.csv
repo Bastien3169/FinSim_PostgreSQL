@@ -1,4 +1,4 @@
-Short_Name_Etf,Ticker_Etf_Yf,Ticker_Etf,Devise,Place_Boursiere_Etf,Volume_Moyen,Frais_pct
+short_name_etf,ticker_etf_yf,ticker_etf,devise,place_boursiere_etf,volume_moyen,frais_pct
 Amundi CAC 40 Daily (-2x) Inver,BX4.PA,BX4,EUR,PAR,13349470.0,0.6
 Amundi EURO STOXX 50 Daily (-2x,BXX.PA,BXX,EUR,PAR,842374.0,0.6
 iShares MSCI World Swap PEA UCI,WPEA.PA,WPEA,EUR,PAR,684088.0,

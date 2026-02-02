@@ -9,8 +9,8 @@ def hist_etfs(csv_bdd):
 
     dfs = []
     for idx, row in df.iterrows():
-        ticker_yf = row["Ticker_Etf_Yf"]
-        short_name = row["Short_Name_Etf"]
+        ticker_yf = row["ticker_etf_yf"]
+        short_name = row["short_name_etf"]
         
         try:
             ticker = yf.Ticker(ticker_yf)
@@ -21,17 +21,17 @@ def hist_etfs(csv_bdd):
                 continue
 
             hist = hist.reset_index() # Reset index pour que la date devienne une colonne
-            hist["Date"] = pd.to_datetime(hist["Date"], errors="coerce").dt.strftime("%d-%m-%Y") # Conversion de la colonne Date au format souhaité
-            hist["Close"] = hist["Close"].round(4)  # Ne garder que les colonnes souhaitées
-            hist = hist.dropna(subset=["Close"]) # Supprimer les lignes où Close est NaN
+            hist["date"] = pd.to_datetime(hist["Date"], utc=True).dt.date # Conversion de la colonne Date au format souhaité
+            hist["close"] = hist["Close"].round(4)  # Ne garder que les colonnes souhaitées
+            hist = hist.dropna(subset=["close"]) # Supprimer les lignes où Close est NaN
             
             # Vérifier qu'il reste des données
             if hist.empty:
                 print(f"⚠️ Pas de données Close valides pour {ticker_yf}.")
                 continue
             
-            hist["Ticker_Etf_Yf"] = ticker_yf
-            hist["Short_Name_Etf"] = short_name
+            hist["ticker_etf_yf"] = ticker_yf
+            hist["short_name_etf"] = short_name
 
             dfs.append(hist)
             print(f"✅ Historique récupéré pour {ticker_yf}.")
@@ -44,13 +44,13 @@ def hist_etfs(csv_bdd):
         # Concaténer tous les DataFrames de la liste
         df_hist = pd.concat(dfs, ignore_index=True)
         # Ne garder que les colonnes souhaitées
-        df_hist = df_hist[["Date", "Close", "Ticker_Etf_Yf", "Short_Name_Etf"]]
+        df_hist = df_hist[["date", "close", "ticker_etf_yf", "short_name_etf"]]
         # Sauvegarde du fichier csv
         df_hist.to_csv(os.path.join(csv_bdd, "historique_etfs.csv"), index=False, encoding="utf-8")
         print(f"[✅] CSV de l'historique des ETFs récupéré avec {len(df_hist)} entrées.")
     else:
         print("❌ Aucun historique récupéré.")
-        df_hist = pd.DataFrame(columns=["Date", "Close", "Ticker_Etf_Yf", "Short_Name_Etf"]) # Retourner un DataFrame vide si aucun historique
+        df_hist = pd.DataFrame(columns=["date", "close", "ticker_etf_yf", "short_name_etf"]) # Retourner un DataFrame vide si aucun historique
     
     return df_hist
 
@@ -60,7 +60,7 @@ def infos_etfs_clean(csv_bdd, df_hist):
     # Compter avant/après
     nb_avant = len(df_infos)
     
-    df_infos = df_infos[df_infos["Ticker_Etf_Yf"].isin(df_hist["Ticker_Etf_Yf"])]
+    df_infos = df_infos[df_infos["ticker_etf_yf"].isin(df_hist["ticker_etf_yf"])]
     
     # Afficher les stats
     nb_apres = len(df_infos)

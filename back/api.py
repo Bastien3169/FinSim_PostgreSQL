@@ -132,9 +132,7 @@ def get_all_users():
     return {
         "users": [
             {"id": u[0], "username": u[1], "email": u[2], "role": u[3], "registration_date": u[4]}
-            for u in users
-        ]
-    }
+            for u in users]}
 
 @app.get("/api/admin/users/search")
 def search_user(query: str):
@@ -189,17 +187,18 @@ def get_indices_infos(ticker: str):
         raise HTTPException(status_code=404, detail="Indice non trouvé")
     return df.to_dict(orient="records")
 
-@app.get("/api/indices/prix/{ticker}")
-def get_indices_prix(ticker: str):
-    df = indices.get_prix_date(ticker)
+@app.get("/api/indices/prix")
+# J'ai enelevé le /{ticker} pour correspondre au front
+def get_indices_prix(name: str):
+    df = indices.get_prix_date(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Données de prix non trouvées")
-    df["Date"] = df["Date"].astype(str)
+    df["date"] = df["date"].astype(str)
     return df.to_dict(orient="records")
 
-@app.get("/api/indices/composition/{ticker}")
-def get_indices_composition(ticker: str):
-    df = indices.get_composition_indice(ticker)
+@app.get("/api/indices/composition")
+def get_indices_composition(name: str):
+    df = indices.get_composition_indice(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Composition non trouvée")
     return df.to_dict(orient="records")
