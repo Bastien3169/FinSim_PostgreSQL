@@ -53,9 +53,6 @@ class FinanceDatabaseIndice:
         with get_connection() as conn:
             query = "SELECT date, close FROM historique_indices WHERE short_name_indice = %s ORDER BY date"
             df = pd.read_sql(query, conn, params=(selected_indice,))
-        if not df.empty:
-            df["date"] = pd.to_datetime(df["date"], format="%d-%m-%Y")
-            df = df.sort_values("date").reset_index(drop=True)
         return df
 
     def get_composition_indice(self, selected_indice):
@@ -87,27 +84,24 @@ class FinanceDatabaseCryptos:
     
     def get_list_cryptos(self):
         with get_connection() as conn:
-            df = pd.read_sql("SELECT DISTINCT Short_Name_Cryptos FROM cryptos_infos", conn)
-        return df["Short_Name_Cryptos"].tolist()
+            df = pd.read_sql("SELECT DISTINCT short_name_cryptos FROM cryptos_infos", conn)
+        return df["short_name_cryptos"].tolist()
     
-    def get_infos_cryptos(self, short_name=None):
+    def get_infos_cryptos(self, short_name):
         with get_connection() as conn:
             query = "SELECT * FROM cryptos_infos"
             if short_name:
-                query += " WHERE Short_Name_Cryptos = %s"
+                query += " WHERE short_name_cryptos = %s"
                 df = pd.read_sql(query, conn, params=(short_name,))
             else:
                 df = pd.read_sql(query, conn)
-        df = df.drop_duplicates(subset=["Short_Name_Cryptos"])
+        df = df.drop_duplicates(subset=["short_name_cryptos"])
         return df
 
     def get_prix_date(self, actif):
         with get_connection() as conn:
-            query = "SELECT Date, Close FROM historique_cryptos WHERE Short_Name_Cryptos = %s ORDER BY Date"
+            query = "SELECT date, close FROM historique_cryptos WHERE short_name_cryptos = %s ORDER BY date"
             df = pd.read_sql(query, conn, params=(actif,))
-        if not df.empty:
-            df["Date"] = pd.to_datetime(df["Date"], format="%d-%m-%Y")
-            df = df.sort_values("Date").reset_index(drop=True)
         return df
 
 
@@ -119,14 +113,14 @@ class FinanceDatabaseEtfs:
     
     def get_list_etfs(self):
         with get_connection() as conn:
-            df = pd.read_sql("SELECT Short_Name_Etf FROM etfs_infos", conn)
-        return df["Short_Name_Etf"].tolist()
+            df = pd.read_sql("SELECT short_name_etf FROM etfs_infos", conn)
+        return df["short_name_etf"].tolist()
     
     def get_infos_etfs(self, short_name=None):
         with get_connection() as conn:
             query = "SELECT * FROM etfs_infos"
             if short_name:
-                query += " WHERE Short_Name_Etf = %s"
+                query += " WHERE short_name_etf = %s"
                 df = pd.read_sql(query, conn, params=(short_name,))
             else:
                 df = pd.read_sql(query, conn)
@@ -134,11 +128,8 @@ class FinanceDatabaseEtfs:
 
     def get_prix_date(self, actif):
         with get_connection() as conn:
-            query = "SELECT Date, Close FROM historique_etfs WHERE Short_Name_Etf = %s ORDER BY Date"
+            query = "SELECT date, close FROM historique_etfs WHERE short_name_etf = %s ORDER BY date"
             df = pd.read_sql(query, conn, params=(actif,))
-        if not df.empty:
-            df["Date"] = pd.to_datetime(df["Date"], format="%d-%m-%Y")
-            df = df.sort_values("Date").reset_index(drop=True)
         return df
     
 

@@ -12,7 +12,7 @@ import glob
 def hist_cryptos(csv_bdd):
     
     # Lecture des fichiers
-    df_crypto_infos = pd.read_csv(os.path.join(csv_bdd, "crypto_infos.csv"), encoding="utf-8")
+    df_crypto_infos = pd.read_csv(os.path.join(csv_bdd, "cryptos_infos.csv"), encoding="utf-8")
 
     # Sélection des 2 premières pour test
     cryptos_tickers = df_crypto_infos["ticker_cryptos_yf"].tolist()
@@ -50,10 +50,11 @@ def hist_cryptos(csv_bdd):
     # Arrondir la colonne "Close"
     df_hist["close"] = df_hist["Close"].round(3)
 
-    # Supprimer colonnes inutiles
-    df_hist = df_hist.drop(columns=["Open", "High", "Low", "Volume", "Dividends", "Stock Splits"], errors="ignore")
+    # Supprimer lignes sans historique
+    df_hist = df_hist.dropna(subset=["close"])
 
-    #display(df_hist)
+    # On ne garde que les colonnes nécessaires pour la base de données
+    df_hist = df_hist[["date", "close", "ticker_cryptos_yf", "short_name_cryptos"]]
 
     # Sauvegarde
     df_hist.to_csv(os.path.join(csv_bdd, "historique_cryptos.csv"), index=False, encoding="utf-8")

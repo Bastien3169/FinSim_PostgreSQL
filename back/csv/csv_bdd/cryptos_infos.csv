@@ -1,4 +1,4 @@
-Short_Name_Cryptos,Ticker_cryptos_Yf,Ticker_Cryptos,Prix_actuel,Capitalisation_Boursiere,Offre_En_Circulation,ATH,MAJ
+short_name_cryptos,ticker_cryptos_yf,ticker_cryptos,prix_actuel,capitalisation_boursiere,offre_en_Circulation,ath,maj
 Bitcoin,BTC-USD,btc,107854.0,2151307797026,19943812.0,126080.0,2025-11-03
 Ethereum,ETH-USD,eth,3715.31,448288701447,120697887.06765,4946.05,2025-11-03
 Tether,USDT-USD,usdt,1.0,183465190858,183453580925.9606,1.32,2025-11-03

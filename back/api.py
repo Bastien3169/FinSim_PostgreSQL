@@ -158,19 +158,19 @@ def delete_user(email: str):
 def get_stocks_list():
     return {"stocks": stocks.get_list_stocks()}
 
-@app.get("/api/stocks/infos/{ticker}")
-def get_stocks_infos(ticker: str):
-    df = stocks.get_infos_stocks(ticker)
+@app.get("/api/stocks/infos")
+def get_stocks_infos(name: str):
+    df = stocks.get_infos_stocks(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Stock non trouvé")
     return df.to_dict(orient="records")
 
-@app.get("/api/stocks/prix/{ticker}")
-def get_stocks_prix(ticker: str):
-    df = stocks.get_prix_date(ticker)
+@app.get("/api/stocks/prix")
+def get_stocks_prix(name: str):
+    df = stocks.get_prix_date(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Données de prix non trouvées")
-    df["Date"] = df["Date"].astype(str)
+    df["date"] = df["date"].astype(str)
     return df.to_dict(orient="records")
 
 # ============================================
@@ -180,9 +180,9 @@ def get_stocks_prix(ticker: str):
 def get_indices_list():
     return {"indices": indices.get_list_indices()}
 
-@app.get("/api/indices/infos/{ticker}")
-def get_indices_infos(ticker: str):
-    df = indices.get_infos_indices(ticker)
+@app.get("/api/indices/infos")
+def get_indices_infos(name: str):
+    df = indices.get_infos_indices(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Indice non trouvé")
     return df.to_dict(orient="records")
@@ -193,7 +193,6 @@ def get_indices_prix(name: str):
     df = indices.get_prix_date(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Données de prix non trouvées")
-    df["date"] = df["date"].astype(str)
     return df.to_dict(orient="records")
 
 @app.get("/api/indices/composition")
@@ -210,19 +209,18 @@ def get_indices_composition(name: str):
 def get_cryptos_list():
     return {"cryptos": cryptos.get_list_cryptos()}
 
-@app.get("/api/cryptos/infos/{ticker}")
-def get_cryptos_infos(ticker: str):
-    df = cryptos.get_infos_cryptos(ticker)
+@app.get("/api/cryptos/infos")
+def get_cryptos_infos(name: str):
+    df = cryptos.get_infos_cryptos(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Crypto non trouvée")
     return df.to_dict(orient="records")
 
-@app.get("/api/cryptos/prix/{ticker}")
-def get_cryptos_prix(ticker: str):
-    df = cryptos.get_prix_date(ticker)
+@app.get("/api/cryptos/prix")
+def get_cryptos_prix(name: str):
+    df = cryptos.get_prix_date(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Données de prix non trouvées")
-    df["Date"] = df["Date"].astype(str)
     return df.to_dict(orient="records")
 
 # ============================================
@@ -232,19 +230,18 @@ def get_cryptos_prix(ticker: str):
 def get_etfs_list():
     return {"etfs": etfs.get_list_etfs()}
 
-@app.get("/api/etfs/infos/{ticker}")
-def get_etfs_infos(ticker: str):
-    df = etfs.get_infos_etfs(ticker)
+@app.get("/api/etfs/infos")
+def get_etfs_infos(name: str):
+    df = etfs.get_infos_etfs(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="ETF non trouvé")
     return df.to_dict(orient="records")
 
-@app.get("/api/etfs/prix/{ticker}")
-def get_etfs_prix(ticker: str):
-    df = etfs.get_prix_date(ticker)
+@app.get("/api/etfs/prix")
+def get_etfs_prix(name: str):
+    df = etfs.get_prix_date(name)
     if df.empty:
         raise HTTPException(status_code=404, detail="Données de prix non trouvées")
-    df["Date"] = df["Date"].astype(str)
     return df.to_dict(orient="records")
 
 # ============================================

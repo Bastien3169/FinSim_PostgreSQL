@@ -133,6 +133,7 @@ def infos_etfs(dossier_csv="csv", csv_bdd="csv/csv_bdd"):
 
     # Gaeder seulement les colonnes utiles
     df = df[["short_name_etf", "ticker_etf_yf", "ticker_etf", "devise", "place_boursiere_etf", "volume_moyen", "frais_pct",]]
+    
     # Supprime les lignes avec Short_Name_Etf vide ou NaN contrairement à df = df.dropna(subset=["Short_Name_Etf"]) que NaN seulement
     df = df[df["short_name_etf"].notna() & (df["short_name_etf"] != "")]
 

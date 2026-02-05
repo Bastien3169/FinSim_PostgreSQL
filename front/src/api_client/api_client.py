@@ -168,20 +168,20 @@ class FinanceDatabaseStocks:
         response.raise_for_status()
         return response.json()["stocks"]
     
-    def get_infos_stocks(self, short_name=None):
+    def get_infos_stocks(self, short_name):
         if not short_name:
             return pd.DataFrame()
-        response = requests.get(f"{self.api_url}/api/stocks/infos/{short_name}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/stocks/infos", params={"name": short_name}, timeout=30)
         response.raise_for_status()
         return pd.DataFrame(response.json())
     
     def get_prix_date(self, actif):
-        response = requests.get(f"{self.api_url}/api/stocks/prix/{actif}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/stocks/prix", params={"name": actif}, timeout=30)
         response.raise_for_status()
         df = pd.DataFrame(response.json())
         if not df.empty:
-            df["Date"] = pd.to_datetime(df["Date"])
-            df = df.sort_values("Date").reset_index(drop=True)
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True)
         return df
 
 
@@ -198,7 +198,7 @@ class FinanceDatabaseIndice:
         return response.json()["indices"]
     
     def get_infos_indices(self, selected_indice):
-        response = requests.get(f"{self.api_url}/api/indices/infos/{selected_indice}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/indices/infos", params={"name": selected_indice}, timeout=30)
         response.raise_for_status()
         return pd.DataFrame(response.json())
     
@@ -231,20 +231,20 @@ class FinanceDatabaseCryptos:
         response.raise_for_status()
         return response.json()["cryptos"]
     
-    def get_infos_cryptos(self, short_name=None):
+    def get_infos_cryptos(self, short_name):
         if not short_name:
             return pd.DataFrame()
-        response = requests.get(f"{self.api_url}/api/cryptos/infos/{short_name}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/cryptos/infos", params={"name": short_name}, timeout=30)
         response.raise_for_status()
         return pd.DataFrame(response.json())
     
     def get_prix_date(self, actif):
-        response = requests.get(f"{self.api_url}/api/cryptos/prix/{actif}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/cryptos/prix", params={"name": actif}, timeout=30)
         response.raise_for_status()
         df = pd.DataFrame(response.json())
         if not df.empty:
-            df["Date"] = pd.to_datetime(df["Date"])
-            df = df.sort_values("Date").reset_index(drop=True)
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True)
         return df
 
 ################################## api_etfs ##################################
@@ -263,17 +263,17 @@ class FinanceDatabaseEtfs:
     def get_infos_etfs(self, short_name=None):
         if not short_name:
             return pd.DataFrame()
-        response = requests.get(f"{self.api_url}/api/etfs/infos/{short_name}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/etfs/infos", params={"name": short_name}, timeout=30)
         response.raise_for_status()
         return pd.DataFrame(response.json())
     
     def get_prix_date(self, actif):
-        response = requests.get(f"{self.api_url}/api/etfs/prix/{actif}", timeout=30)
+        response = requests.get(f"{self.api_url}/api/etfs/prix", params={"name": actif}, timeout=30)
         response.raise_for_status()
         df = pd.DataFrame(response.json())
         if not df.empty:
-            df["Date"] = pd.to_datetime(df["Date"])
-            df = df.sort_values("Date").reset_index(drop=True)
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True)
         return df
 
 # ============================================

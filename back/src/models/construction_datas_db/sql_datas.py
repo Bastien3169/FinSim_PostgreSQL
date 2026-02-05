@@ -74,13 +74,13 @@ def creation_db():
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS cryptos_infos (
                 short_name_cryptos TEXT,
-                ticker_cryptos_Yf TEXT PRIMARY KEY,
+                ticker_cryptos_yf TEXT PRIMARY KEY,
                 ticker_cryptos TEXT,
                 prix_actuel NUMERIC(18,6),
                 capitalisation_boursiere NUMERIC(18,2),
                 offre_en_circulation NUMERIC(18,2),
-                ATH NUMERIC(18,6),
-                MAJ DATE
+                ath NUMERIC(18,6),
+                maj DATE
             )
         """))
         
