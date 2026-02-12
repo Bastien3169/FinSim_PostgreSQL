@@ -5,12 +5,11 @@ from sendgrid.helpers.mail import Mail
 
 # Configuration SendGrid
 #SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "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")
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "jolie.mountain@gmail.com")
 
 # URL dynamique selon l'environnement
-#BASE_URL = os.getenv("APP_URL", "http://localhost:8501")
-BASE_URL = os.getenv("APP_URL", "https://finsim.up.railway.app")
+BASE_URL = os.getenv("APP_URL", "http://localhost:8501")
 
 def envoie_password_reset_email(to_email, token):
     print(f"🔄 [EMAIL] Tentative d'envoi à {to_email}")

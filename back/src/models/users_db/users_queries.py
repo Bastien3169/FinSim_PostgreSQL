@@ -71,6 +71,11 @@ class AuthManager(BaseDBManager):
 
     # --------------------------- first admin --------------------------- #
     def create_first_admin(self):
+        if not ADMIN_USERNAME or not ADMIN_EMAIL or not ADMIN_PASSWORD:
+            print("⚠️ Variables admin non configurées - Aucun admin créé")
+            return
+
+        # Vérifier si un admin existe déjà
         with engine.connect() as conn:
             result = conn.execute(text("SELECT COUNT(*) FROM users WHERE role = 'admin'"))
             admin_count = result.fetchone()[0]
