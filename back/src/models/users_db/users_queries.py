@@ -7,9 +7,14 @@ from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy import text
 from src.api_conn.database_conn import engine
+from dotenv import load_dotenv
 
-# Import du service mail (à créer)
-# from src.services.envoie_mails import envoie_password_reset_email
+load_dotenv() # Charge les variables d'environnement du .env
+
+# Récupérer depuis variables d'environnement
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', 'admin')
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@finsim.com')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Admin123!')
 
 class BaseDBManager:
     def __init__(self):
@@ -60,8 +65,36 @@ class BaseDBManager:
 class AuthManager(BaseDBManager):
     def __init__(self):
         super().__init__()
-        self.clean_expired_sessions()
+        self.clean_expired_sessions() # supprime les sessions expirées au démarrage
+        self.create_first_admin()  # Crée admin s'il y en a p as
     
+
+    # --------------------------- first admin --------------------------- #
+    def create_first_admin(self):
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT COUNT(*) FROM users WHERE role = 'admin'"))
+            admin_count = result.fetchone()[0]
+
+        if admin_count > 0:
+            return  # Au moins un admin existe déjà
+
+        # Utilisation directe des variables globales
+        print(f"⚠️  Aucun admin trouvé, création automatique...")
+        print(f"   Username : {ADMIN_USERNAME}")
+        print(f"   Email    : {ADMIN_EMAIL}")
+
+        success, message = self.register(ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD)
+
+        if success:
+            with engine.begin() as conn:
+                conn.execute(
+                    text("UPDATE users SET role = 'admin' WHERE email = :email"),
+                    {"email": ADMIN_EMAIL}
+                )
+            print(f"✅ Admin créé avec succès !")
+        else:
+            print(f"❌ Erreur : {message}")
+
     # --------------------------- Utilitaires --------------------------- #
     def hash_password(self, password):
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode('utf-8')

@@ -23,4 +23,4 @@ if __name__ == "__main__":
     csv_path = os.path.join(os.path.dirname(__file__), "..", "CSV", "csv_bdd")
     main_creation_db(csv_path)
     
-    print("✅ Base de données initialisée avec succès !")
+    print("✅ Base de données initialisées avec succès !")
