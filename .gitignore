@@ -6,6 +6,10 @@ Dockerfile
 venv/
 .venv/
 
+# Variables d'environnement
+.env
+*.env
+
 # Données lourdes
 csv/
 *.csv
