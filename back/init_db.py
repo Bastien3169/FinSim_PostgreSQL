@@ -1,5 +1,6 @@
 import sys
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Charge les variables d'environnement
@@ -16,12 +17,20 @@ if __name__ == "__main__":
     
     # 1. Crée les tables users/sessions
     print("📝 Création des tables utilisateurs...")
+
+    # 2. Crée le gestionnaire de base de données
     base_manager = BaseDBManager()
     
-    # 2. Crée les tables de données financières
+    # 3. Crée les tables de données financières
     print("📊 Création des tables de données financières...")
-    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    csv_path = os.path.join(BASE_DIR, "csv", "csv_bdd")
-    main_creation_db(csv_path)
+
+    # ✅ Chemin relatif à init_db.py (qui est dans /app/)
+    csv_path = Path(__file__).parent / "CSV" / "csv_bdd"
+    
+    print(f"📂 CSV PATH = {csv_path}")
+    print(f"✅ EXISTS = {csv_path.exists()}")
+    
+    # 4. Importe les données CSV dans la base de données
+    main_creation_db(str(csv_path))
     
     print("✅ Base de données initialisées avec succès !")
