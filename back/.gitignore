@@ -6,10 +6,6 @@ Dockerfile
 venv/
 .venv/
 
-# Données lourdes
-csv/
-*.csv
-src/models/datas_db/csv/
 
 # Caches et artefacts
 __pycache__/

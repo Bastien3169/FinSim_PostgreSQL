@@ -7,9 +7,6 @@ venv/
 .venv/
 
 # Données lourdes
-csv/
-*.csv
-src/models/datas_db/csv/
 *.db
 
 # Caches et artefacts
