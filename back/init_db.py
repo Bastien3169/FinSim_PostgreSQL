@@ -20,7 +20,8 @@ if __name__ == "__main__":
     
     # 2. Crée les tables de données financières
     print("📊 Création des tables de données financières...")
-    csv_path = os.path.join(os.path.dirname(__file__), "..", "CSV", "csv_bdd")
+    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    csv_path = os.path.join(BASE_DIR, "csv", "csv_bdd")
     main_creation_db(csv_path)
     
     print("✅ Base de données initialisées avec succès !")

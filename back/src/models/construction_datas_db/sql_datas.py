@@ -253,9 +253,3 @@ def main_creation_db(csv_bdd):
     import_csv_compo_indices(csv_bdd)
     
     print("✅ Base de données initialisée avec succès !")
-
-if __name__ == "__main__":
-    # Chemin relatif depuis la racine du projet backend
-    csv_path = os.path.join(os.path.dirname(__file__), "..", "CSV", "csv_bdd")
-    
-    main_creation_db(csv_bdd=csv_path)
