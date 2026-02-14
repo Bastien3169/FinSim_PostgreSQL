@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print("📊 Création des tables de données financières...")
 
     # ✅ Chemin relatif à init_db.py (qui est dans /app/)
-    csv_path = Path(__file__).parent / "CSV" / "csv_bdd"
+    csv_path = Path(__file__).parent / "csv" / "csv_bdd"
     
     print(f"📂 CSV PATH = {csv_path}")
     print(f"✅ EXISTS = {csv_path.exists()}")

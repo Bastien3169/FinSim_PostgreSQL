@@ -11,9 +11,10 @@ venv/
 *.env
 
 # Données lourdes
-csv/
-*.csv
-src/models/datas_db/csv/
+#csv/
+#*.csv
+#src/models/datas_db/csv/
+
 
 # Caches et artefacts
 __pycache__/
