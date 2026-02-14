@@ -1,0 +1,21 @@
+uvicorn api:app --host 0.0.0.0 --port $PORT
+
+uvicorn = Serveur ASGI (comme Gunicorn mais pour FastAPI)
+api = Nom de ton fichier api.py
+:app = Nom de ta variable FastAPI (app = FastAPI() ligne 30 de ton api.py)
+--host 0.0.0.0 = Écoute sur toutes les interfaces (obligatoire pour Railway)
+--port $PORT = Utilise le port fourni par Railway (variable d'environnement)
+
+
+📝 Comparaison avec Streamlit
+C’est exactement la même logique que pour le frontend :
+
+Service : Frontend
+Fichier : main.py
+Commande : streamlit run main.py
+Pourquoi : streamlit est le serveur qui lance l’app
+
+Service : Backend
+Fichier : api.py
+Commande : uvicorn api:app
+Pourquoi : uvicorn est le serveur qui lance l’app FastAPI
