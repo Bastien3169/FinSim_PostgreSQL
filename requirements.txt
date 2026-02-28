@@ -8,11 +8,11 @@ pandas==2.2
 numpy==1.26.4
 plotly==6.1.2
 yfinance==0.2.65
-requests==2.31.0
+requests==2.32.4
 beautifulsoup4==4.12.2
 html5lib==1.1
 python-dateutil==2.8.2
-urllib3==2.4.0   
+urllib3==2.6.3   
 
 selenium==4.33.0
 webdriver-manager==4.0.2
