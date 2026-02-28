@@ -29,24 +29,22 @@ def home_page(go_to, auth_manager):
         """
         <div class="main-container">
             <p>
-             Comparez facilement différents placements (actions, indices, cryptos et ETF) et visualisez leur performance historique en un clin d'œil. 
-             Découvrez deux stratégies clés : l'investissement progressif (DCA) ou en une seule fois (Lump Sum), pour voir ce qui correspond le 
-             mieux à vos objectifs personnels. C'est un outil purement pédagogique basé sur des données passées, sans conseil 
-             financier ni incitation à investir – simplement pour vous aider à comprendre et apprendre sans risque.
-            <br><br>
-            Bonne visite et bon apprentissage !
+            Analysez les performances historiques des indices, actions, cryptos et ETF en un clin d'œil.<br>
+            Simulez vos stratégies DCA (investissement progressif) ou Lump Sum (investissement en une fois).<br>
+            Construisez votre portefeuille pour simuler des rendements passés.<br>
+            Outil pédagogique sans risque : apprenez à investir sans conseil financier.<br><br>
+            Bonne visite !
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-
     # ---------------------------------------------------------
     # BOUTON LOGOUT
     # ---------------------------------------------------------
     if st.session_state.get("auth"):
-        if st.button("🔓 Se déconnecter"):
+        if st.button("🔓 Déconnection"):
             auth_manager.logout()  # supprime la session dans la BDD et le cookie
             # Nettoie session_state
             for key in ["auth", "user_role", "user_email"]:
@@ -86,14 +84,14 @@ def home_page(go_to, auth_manager):
             st.rerun()
 
     with col5:
-        if st.button("🆚 Comparaison des actifs", use_container_width=True):
+        if st.button("👛 Simulation Portefeuille", use_container_width=True):
             go_to("comparaison_actifs")
             st.rerun()
 
     with col6:
-        if st.button("🧪 DCA vs LS", use_container_width=True):
+        if st.button("⚖️ DCA vs LS", use_container_width=True):
             go_to("dca_vs_ls")
-            st.rerun()
+            st.rerun() 
 
     col7, col8, col9 = st.columns(3)
     # ---------------------------------------------------------
@@ -101,7 +99,7 @@ def home_page(go_to, auth_manager):
     # ---------------------------------------------------------
     if st.session_state.get("user_role") == "admin":
         with col8:
-            if st.button("🛠️ Administration", use_container_width=True):
+            if st.button("🛠️ Admin", use_container_width=True):
                 go_to("admin")
                 st.rerun()
 

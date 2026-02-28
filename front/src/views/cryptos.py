@@ -38,7 +38,7 @@ def cryptos_page(go_to):
     
 
    # =============== Composition ================
-    st.markdown(f"""<div class="main-container"><h2>🗂 Infos des cryptos</h2></div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class="main-container"><h2>🗂 Informations crypto</h2></div>""", unsafe_allow_html=True)
 
     infos_actifs(datas_manager=datas_actif, liste_actifs=liste_actif,actif_default=ACTIF_DEFAULT, actif_type=ACTIF_TYPE)
     

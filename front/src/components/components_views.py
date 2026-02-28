@@ -11,7 +11,7 @@ def load_css(css_path="src/assets/css/streamlit.css"):
     # Charger le fichier CSS pour le style personnalisé
     with open(css_path) as css:
         st.markdown(f"<style>{css.read()}</style>", unsafe_allow_html=True)
-
+ 
 # ========================================
 # 2. COMPOSANTS UI
 # ========================================

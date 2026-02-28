@@ -73,12 +73,12 @@ def dca_vs_ls_page(go_to):
         df = calcul_multiple_rendements(durees = [25, 20, 15, 10,5], mois_dca_list = [6, 12, 18, 24], somme_investie  = 100000, ticker = "S&P 500")
 
 
-        st.markdown(f"""<div class="main-container"><h2>📊 Montant de l'investissement en fonction de la durée du placement</h2></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="main-container"><h2>📊 Gains par durées d'investissement</h2></div>""", unsafe_allow_html=True)
         fig = graphe_barre(df_resultats)
-        st.markdown(f"""<div class="main-container"><h3>Graphique du montant de l'investissement en fonction de la durée du placement</h3></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="main-container"><h3>Graphique des gains par durées d'investissement</h3></div>""", unsafe_allow_html=True)
         st.plotly_chart(fig, use_container_width=True)
         st.markdown("---")
-        st.markdown(f"""<div class="main-container"><h3>Tableau du montant de l'investissement en fonction de la durée du placement</h3></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="main-container"><h3>Tableau des gains par durées d'investissement</h3></div>""", unsafe_allow_html=True)
         st.dataframe(df_resultats, use_container_width=True)
 
 
