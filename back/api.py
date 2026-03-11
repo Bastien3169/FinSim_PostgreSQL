@@ -9,6 +9,8 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Cookie
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
+from fastapi.responses import HTMLResponse
+from pathlib import Path
 
 # Ajouter le chemin du projet
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -243,6 +245,16 @@ def get_etfs_prix(name: str):
     if df.empty:
         raise HTTPException(status_code=404, detail="Données de prix non trouvées")
     return df.to_dict(orient="records")
+
+
+# ============================================
+# POLITIQUE DE CONFIDENTIALITÉ
+# ============================================
+@app.get("/privacy", response_class=HTMLResponse)
+def privacy_policy():
+    html_content = Path("politique_confidentialite.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=html_content)
+
 
 # ============================================
 # HEALTH CHECK
