@@ -102,6 +102,14 @@ def home_page(go_to, auth_manager):
             if st.button("🛠️ Admin", use_container_width=True):
                 go_to("admin")
                 st.rerun()
+    
+    # ---------------------------------------------------------
+    # POLITIQUE DE CONFIDENTIALITÉ
+    # ---------------------------------------------------------
+    st.markdown("---")
+    if st.button("📄 Politique de confidentialité", key="privacy_link", help="Aller à la politique de confidentialité"):
+        go_to("confidentialite")
+        st.rerun()
 
     # ---------------------------------------------------------
     # FOOTER

@@ -20,6 +20,7 @@ from src.views.admin import admin_page
 from src.api_client.api_client import AuthManager
 from src.views.forgot_password import forgot_password_page
 from src.views.reset_password import reset_password_page
+from src.views.confidentialite import confidentialite_page
 
 # ---------------------------------------------------------
 # AUTH MANAGER
@@ -111,6 +112,7 @@ def router():
         "dca_vs_ls": lambda: dca_vs_ls_page(go_to),
         "comparaison_actifs": lambda: actifs_page(go_to),
         "admin": lambda: admin_page(go_to),
+        "confidentialite": lambda: confidentialite_page(go_to)
     }
 
     # Si page inconnue → home

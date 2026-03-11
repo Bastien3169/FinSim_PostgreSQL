@@ -2,17 +2,11 @@ Ouvrir le terminal et naviguer jusqu’au dossier du projet (par exemple en tapa
 
 _________________________________________________________________________________________
 
-Créer un environnement virtuel : 
+EN local: 
 ---------------------------------
-python -m venv venv
-!!! sur certaines installations macOS/Linux, il peut être nécessaire de remplacer "python" par "python3" !!!
-_________________________________________________________________________________________
-
-
-Activer l'environnement virtuel :
----------------------------------
-Pour macOS/Linux : source venv/bin/activate
-Pour Windows : venv\Scripts\activate
+Pour macOS/Linux : source venv/bin/activate pour le dossier back et front (ou uvicorn main:api --reload --port 8000)
+se mettre dans le dossier "back" et faire :  uvicorn api:app --reload --port 8000
+se mettre dans le dossier "front" et faire : streamlit run app.py
 _________________________________________________________________________________________
 
 
@@ -22,12 +16,3 @@ python -m pip install -r requirements.txt
 !!! sur certaines installations macOS/Linux, il peut être nécessaire de remplacer "python" par "python3" !!!
 _________________________________________________________________________________________
 
-Ensuite entrer :
----------------------------------
-streamlit run app.py 
-
-_________________________________________________________________________________________
-
-
-Lien vers site via Render (Attention, render build le repo, ça peut prendre quelques minutes):
-https://projectfinance.onrender.com/
