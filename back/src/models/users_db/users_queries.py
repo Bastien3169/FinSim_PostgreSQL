@@ -378,9 +378,12 @@ class AdminManager(BaseDBManager):
     
     def delete_user(self, email):
         with engine.begin() as conn:
-            conn.execute(
-                text("DELETE FROM users WHERE email = :email"),
-                {"email": email}
-            )
+            user_id = conn.execute(text("SELECT id FROM users WHERE email = :email"), {"email": email}).scalar()
+            if user_id is None:
+                return f"❌ Aucun utilisateur trouvé avec l'email {email}."
+            
+            conn.execute(text("DELETE FROM sessions WHERE user_id = :user_id"), {"user_id": user_id})
+            conn.execute(text("DELETE FROM password_resets WHERE user_id = :user_id"), {"user_id": user_id})
+            conn.execute(text("DELETE FROM users WHERE id = :user_id"), {"user_id": user_id})
         
         return f"🗑️ Utilisateur avec email {email} supprimé."

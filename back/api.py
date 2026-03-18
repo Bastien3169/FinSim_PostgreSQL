@@ -255,6 +255,14 @@ def privacy_policy():
     html_content = Path("politique_confidentialite.html").read_text(encoding="utf-8")
     return HTMLResponse(content=html_content)
 
+# ============================================
+# SUPPRESSION DE COMPTE
+# ============================================
+@app.get("/delete-account", response_class=HTMLResponse)
+def delete_account():
+    html_content = Path("suppression_compte.html").read_text(encoding="utf-8") 
+    return HTMLResponse(content=html_content)
+
 
 # ============================================
 # HEALTH CHECK
