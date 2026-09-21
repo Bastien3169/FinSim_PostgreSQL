@@ -3,13 +3,37 @@ import uuid
 import re
 import bcrypt
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy import text
 from src.api_conn.database_conn import engine
 from dotenv import load_dotenv
 
 load_dotenv() # Charge les variables d'environnement du .env
+
+# ==========================================================================
+# CORRECTIF PERSISTANCE DE SESSION
+# ==========================================================================
+# Nombre maximum de sessions actives simultanees par utilisateur.
+# Une session = UN appareil (Streamlit dans le navigateur, Flet sur le
+# telephone, un autre navigateur...). Le code d'origine supprimait toutes
+# les sessions du compte a chaque login : se connecter sur Flet deconnectait
+# Streamlit, et inversement.
+MAX_SESSIONS_PAR_USER = 5
+
+# Duree de validite d'une session, en jours
+DUREE_SESSION_COURTE = 1    # sans "Rester connecte"
+DUREE_SESSION_LONGUE = 30   # avec "Rester connecte"
+
+
+def _utcnow() -> datetime:
+    """datetime UTC naif, compatible avec les colonnes TIMESTAMP sans fuseau.
+
+    _utcnow() est deprecie depuis Python 3.12. On passe par
+    datetime.now(timezone.utc) puis on retire le fuseau, pour rester
+    coherent avec les lignes deja presentes en base.
+    """
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 # Récupérer depuis variables d'environnement
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', 'admin')
@@ -44,6 +68,31 @@ class BaseDBManager:
                     FOREIGN KEY(user_id) REFERENCES users(id)
                 )
             """))
+
+            # --- Migration NON DESTRUCTIVE de la table sessions ---------------
+            # ADD COLUMN IF NOT EXISTS : rejouable a chaque demarrage, aucune
+            # donnee perdue, aucune session existante invalidee.
+            # created_at    : sert a supprimer les sessions les plus anciennes
+            # duration_days : sert a l'expiration glissante (on doit savoir de
+            #                 combien repousser : 1 jour ou 30 jours)
+            conn.execute(text(
+                "ALTER TABLE sessions ADD COLUMN IF NOT EXISTS created_at TIMESTAMP"))
+            conn.execute(text(
+                "ALTER TABLE sessions ADD COLUMN IF NOT EXISTS duration_days INTEGER"))
+            conn.execute(
+                text("UPDATE sessions SET created_at = :now WHERE created_at IS NULL"),
+                {"now": _utcnow()}
+            )
+            conn.execute(
+                text("UPDATE sessions SET duration_days = :d WHERE duration_days IS NULL"),
+                {"d": DUREE_SESSION_COURTE}
+            )
+
+            # get_current_user() est appele a chaque rerun Streamlit : on indexe.
+            conn.execute(text(
+                "CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)"))
+            conn.execute(text(
+                "CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at)"))
             
             # Table password_resets
             conn.execute(text("""
@@ -159,32 +208,55 @@ class AuthManager(BaseDBManager):
             user = result.fetchone()
             
             if not user:
-                return False, "❌ Utilisateur non trouvé", None
+                return False, "❌ Utilisateur non trouvé", None, None
             
             user_id, hashed, role = user
             
             if not self.check_password(password, hashed):
-                return False, "❌ Mot de passe incorrect", None
+                return False, "❌ Mot de passe incorrect", None, None
             
-            # Supprimer anciennes sessions
+            # /!\ CORRECTIF PRINCIPAL
+            # Avant : DELETE FROM sessions WHERE user_id = :user_id
+            # -> toutes les sessions du compte etaient effacees a chaque login,
+            #    donc un seul appareil connecte a la fois. On ne purge plus que
+            #    les sessions REELLEMENT expirees de cet utilisateur.
             conn.execute(
-                text("DELETE FROM sessions WHERE user_id = :user_id"),
-                {"user_id": user_id}
+                text("DELETE FROM sessions WHERE user_id = :user_id AND expires_at <= :now"),
+                {"user_id": user_id, "now": _utcnow()}
             )
-            
-            # Créer nouvelle session
-            session_id = str(uuid.uuid4())
-            expires_at = datetime.utcnow() + timedelta(days=30 if stay_connected else 1)
-            
+
+            # Garde-fou : on plafonne le nombre de sessions actives par compte,
+            # en supprimant les plus anciennes au-dela de MAX_SESSIONS_PAR_USER.
             conn.execute(
                 text("""
-                    INSERT INTO sessions (session_id, user_id, expires_at)
-                    VALUES (:session_id, :user_id, :expires_at)
+                    DELETE FROM sessions
+                    WHERE session_id IN (
+                        SELECT session_id FROM sessions
+                        WHERE user_id = :user_id
+                        ORDER BY created_at DESC NULLS LAST
+                        OFFSET :garde
+                    )
+                """),
+                {"user_id": user_id, "garde": MAX_SESSIONS_PAR_USER - 1}
+            )
+
+            # Creer la nouvelle session
+            session_id = str(uuid.uuid4())
+            now = _utcnow()
+            duration_days = DUREE_SESSION_LONGUE if stay_connected else DUREE_SESSION_COURTE
+            expires_at = now + timedelta(days=duration_days)
+
+            conn.execute(
+                text("""
+                    INSERT INTO sessions (session_id, user_id, expires_at, created_at, duration_days)
+                    VALUES (:session_id, :user_id, :expires_at, :created_at, :duration_days)
                 """),
                 {
                     "session_id": session_id,
                     "user_id": user_id,
-                    "expires_at": expires_at
+                    "expires_at": expires_at,
+                    "created_at": now,
+                    "duration_days": duration_days
                 }
             )
         
@@ -202,36 +274,57 @@ class AuthManager(BaseDBManager):
     
     # --------------------------- Check current user --------------------------- #
     def get_current_user(self, session_id):
+        """Renvoie l'utilisateur d'une session valide, et prolonge la session.
+
+        Expiration glissante : tant que l'utilisateur revient, sa date
+        d'expiration est repoussee. On ne fait l'UPDATE que si moins de la
+        moitie de la fenetre reste, pour ne pas ecrire en base a chaque
+        rerun Streamlit (le front appelle cette route tres souvent).
+        """
         if not session_id:
             return None
-        
-        with engine.connect() as conn:
+
+        now = _utcnow()
+
+        with engine.begin() as conn:
             result = conn.execute(
                 text("""
-                    SELECT u.id, u.username, u.email, u.role
+                    SELECT u.id, u.username, u.email, u.role,
+                           s.expires_at, s.duration_days
                     FROM users u
                     JOIN sessions s ON u.id = s.user_id
                     WHERE s.session_id = :session_id AND s.expires_at > :now
                 """),
-                {"session_id": session_id, "now": datetime.utcnow()}
+                {"session_id": session_id, "now": now}
             )
-            user = result.fetchone()
-            
-            if user:
-                return {
-                    "id": user[0],
-                    "username": user[1],
-                    "email": user[2],
-                    "role": user[3]
-                }
-            return None
+            row = result.fetchone()
+
+            if not row:
+                return None
+
+            expires_at = row[4]
+            fenetre = timedelta(days=row[5] or DUREE_SESSION_COURTE)
+
+            if expires_at - now < fenetre / 2:
+                conn.execute(
+                    text("UPDATE sessions SET expires_at = :expires_at "
+                         "WHERE session_id = :session_id"),
+                    {"expires_at": now + fenetre, "session_id": session_id}
+                )
+
+            return {
+                "id": row[0],
+                "username": row[1],
+                "email": row[2],
+                "role": row[3]
+            }
     
     # --------------------------- Supprimer sessions expirées --------------------------- #
     def clean_expired_sessions(self):
         with engine.begin() as conn:
             conn.execute(
                 text("DELETE FROM sessions WHERE expires_at <= :now"),
-                {"now": datetime.utcnow()}
+                {"now": _utcnow()}
             )
     
     # --------------------------- Mot de passe oublié --------------------------- #
@@ -248,7 +341,7 @@ class AuthManager(BaseDBManager):
             
             user_id = user[0]
             token = secrets.token_urlsafe(32)
-            expires_at = datetime.utcnow() + timedelta(hours=1)
+            expires_at = _utcnow() + timedelta(hours=1)
             
             # Supprimer anciens tokens
             conn.execute(
@@ -266,7 +359,7 @@ class AuthManager(BaseDBManager):
                     "user_id": user_id,
                     "token": token,
                     "expires_at": expires_at,
-                    "created_at": datetime.utcnow()
+                    "created_at": _utcnow()
                 }
             )
         
@@ -297,7 +390,7 @@ class AuthManager(BaseDBManager):
                     SELECT user_id FROM password_resets
                     WHERE token = :token AND expires_at > :now
                 """),
-                {"token": token, "now": datetime.utcnow()}
+                {"token": token, "now": _utcnow()}
             )
             row = result.fetchone()
             

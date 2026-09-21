@@ -11,7 +11,7 @@ def login_page(auth_manager, go_to=None):
     if menu == "Connexion":
         email = st.text_input("📧 Votre email", key="login_email")
         password = st.text_input("🔒 Mot de passe", type="password", key="login_password")
-        stay_connected = st.checkbox("Rester connecté", value=False) 
+        stay_connected = st.checkbox("Rester connecté", value=False)
 
         if st.button("👤 Se connecter", use_container_width=True):
             if not email or not password:
@@ -24,7 +24,21 @@ def login_page(auth_manager, go_to=None):
                     st.session_state.user_role = role
                     st.session_state.page = "home"
                     st.success(message)
-                    st.rerun()
+                    st.info("⏳ Connexion en cours…")
+
+                    # ⚠️ CORRECTIF PERSISTANCE — surtout PAS de st.rerun() ici.
+                    #
+                    # auth_manager.login() vient d'appeler cookies.save(), qui
+                    # rend le composant Streamlit chargé d'écrire session_id
+                    # dans document.cookie. st.rerun() interrompt le run
+                    # immédiatement (RerunException) : le composant n'est jamais
+                    # envoyé au navigateur, le cookie n'est jamais écrit, la
+                    # valeur reste coincée dans st.session_state, et tout est
+                    # perdu au premier rafraîchissement de la page.
+                    #
+                    # En laissant le run se terminer, le composant écrit le
+                    # cookie puis renvoie sa valeur à Streamlit, ce qui
+                    # déclenche de lui-même le rerun vers la page "home".
                 else:
                     st.error(message)
 
@@ -41,7 +55,7 @@ def login_page(auth_manager, go_to=None):
         confirm_password = st.text_input("🔒 Confirmez le mot de passe", type="password", key="register_confirm_password")
 
         st.info("ℹ️ Le mot de passe doit contenir :\n- Au moins 5 caractères\n- Une majuscule\n- Une minuscule\n- Un chiffre\n- Un caractère spécial (!@#$%^&*?)")
-        
+
         if st.button("📝 S'inscrire", use_container_width=True):
             if not username or not email or not password or not confirm_password:
                 st.error("❌ Veuillez remplir tous les champs")

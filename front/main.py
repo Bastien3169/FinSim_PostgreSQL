@@ -25,11 +25,26 @@ from src.views.confidentialite import confidentialite_page
 # ---------------------------------------------------------
 # AUTH MANAGER
 # ---------------------------------------------------------
-if "auth_manager" not in st.session_state:
-    st.session_state.auth_manager = AuthManager()
-auth_manager = st.session_state.auth_manager
+# ⚠️ CORRECTIF PERSISTANCE — ne PAS mettre l'AuthManager dans st.session_state.
+#
+# Ancien code :
+#     if "auth_manager" not in st.session_state:
+#         st.session_state.auth_manager = AuthManager()
+#     auth_manager = st.session_state.auth_manager
+#
+# EncryptedCookieManager n'est pas un simple objet Python : c'est un COMPOSANT
+# Streamlit. Son __init__ appelle _component_func(...), qui est ce qui déclare
+# l'iframe chargée de lire et d'écrire document.cookie dans le navigateur.
+# Un composant doit être re-rendu à CHAQUE exécution du script, sinon Streamlit
+# le retire de l'arbre et l'iframe disparaît côté navigateur.
+#
+# En le mettant en cache, on ne l'instanciait qu'une fois : aux reruns suivants
+# le composant n'était plus déclaré, les écritures de cookies mises en file dans
+# st.session_state['CookieManager.queue'] n'étaient jamais envoyées au
+# navigateur, et tout disparaissait au premier F5.
+auth_manager = AuthManager()
 
-# S'assurer que les cookies sont prêts
+# S'assurer que les cookies sont prêts (1er run : le composant renvoie None)
 if not auth_manager.cookies.ready():
     st.stop()
 
@@ -44,9 +59,11 @@ if url_page:
     st.session_state.page = url_page
 
 # ---------------------------------------------------------
-# ⭐ AUTO-LOGIN : Vérifier si l'utilisateur a déjà un cookie valide
+# ⭐ AUTO-LOGIN : vérifier si l'utilisateur a déjà un cookie valide
 # ---------------------------------------------------------
-# On vérifie AVANT d'initialiser la page
+# Un SEUL appel par run : l'ancien code interrogeait /api/auth/me deux fois
+# (ici puis dans router()), soit deux allers-retours HTTP vers Railway à
+# chaque interaction. On récupère l'utilisateur une fois et on le transmet.
 user = auth_manager.get_current_user()
 
 if user:
@@ -54,15 +71,15 @@ if user:
     st.session_state.auth = True
     st.session_state.user_email = user["email"]
     st.session_state.user_role = user["role"]
-    
-    # ⭐ Initialiser la page par défaut sur "home" si connecté (SEULEMENT si pas de page dans l'URL)
+
+    # ⭐ Page par défaut "home" si connecté (SEULEMENT si pas de page dans l'URL)
     if "page" not in st.session_state and not url_page:
         st.session_state.page = "home"
 else:
     # ❌ Pas de cookie valide
     st.session_state.auth = False
-    
-    # ⭐ Initialiser la page par défaut sur "auth" si non connecté (SEULEMENT si pas de page dans l'URL)
+
+    # ⭐ Page par défaut "auth" si non connecté (SEULEMENT si pas de page dans l'URL)
     if "page" not in st.session_state and not url_page:
         st.session_state.page = "auth"
 
@@ -78,10 +95,10 @@ def go_to(page: str):
 # ---------------------------------------------------------
 # ROUTER
 # ---------------------------------------------------------
-def router():
+def router(user):
     page = st.session_state.page
 
-    # ⭐ Pages publiques (accessible sans authentification)
+    # ⭐ Pages publiques (accessibles sans authentification)
     if page == "auth":
         login_page(auth_manager, go_to=go_to)
         return
@@ -89,13 +106,13 @@ def router():
     if page == "forgot_password":
         forgot_password_page(auth_manager, go_to=go_to)
         return
-    
+
     if page == "reset_password":
         reset_password_page(auth_manager, go_to=go_to)
         return
 
     # ⭐ Pages protégées (nécessitent authentification)
-    user = auth_manager.get_current_user()
+    # `user` vient du contrôle fait plus haut : pas de second appel réseau.
     if not user:
         # Si pas de session valide, rediriger vers auth
         st.session_state.page = "auth"
@@ -130,4 +147,4 @@ def router():
 # ---------------------------------------------------------
 # APP
 # ---------------------------------------------------------
-router()
+router(user)

@@ -93,10 +93,17 @@ class UserUpdate(BaseModel):
 # ============================================
 @app.post("/api/auth/login")
 def login(data: UserLogin):
-    success, message, role, session_id = auth.login(data.email, data.password, data.stay_connected)
-    if success:
-        return {"success": True, "message": message, "session_id": session_id, "role": role}
-    raise HTTPException(status_code=401, detail=message)
+    # AuthManager.login() renvoie desormais TOUJOURS 4 valeurs :
+    #   (success, message, role, session_id)
+    # Avant le correctif il n'en renvoyait que 3 en cas d'echec : le
+    # depaquetage ci-dessous levait un ValueError et l'API repondait
+    # HTTP 500 au lieu de HTTP 401 sur un mauvais mot de passe.
+    success, message, role, session_id = auth.login(
+        data.email, data.password, data.stay_connected
+    )
+    if not success:
+        raise HTTPException(status_code=401, detail=message)
+    return {"success": True, "message": message, "session_id": session_id, "role": role}
 
 @app.post("/api/auth/register")
 def register(data: UserRegister):

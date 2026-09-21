@@ -31,3 +31,6 @@ __pycache__/
 *.bak
 *.tmp
 
+
+# Livrables Claude (versions de travail + sauvegardes)
+_Claude/
