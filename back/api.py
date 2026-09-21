@@ -57,10 +57,27 @@ def startup():
     auth.clean_expired_sessions()
     print("✅ Sessions expirées nettoyées au démarrage")
 
-    print("🔄 Chargement des données CSV dans la base de données...")
-    csv_path = Path(__file__).parent / "csv" / "csv_bdd"
-    main_creation_db(str(csv_path))
-    print("✅ Données CSV chargées avec succès.")
+    # ⚠️ Le chargement des CSV n'est PLUS fait automatiquement au démarrage.
+    #
+    # main_creation_db() enchaîne 10 DROP TABLE puis réimporte ~91 Mo de CSV
+    # (plus de 2 millions de lignes). Joué à chaque redémarrage Railway — donc
+    # à chaque déploiement, chaque redémarrage de conteneur, chaque reprise
+    # après veille — cela rendait l'API indisponible le temps de l'import, et
+    # si le conteneur était tué en cours de route (health check dépassé) on
+    # repartait sur des tables de données à moitié vides.
+    #
+    # Pour (re)charger les données, deux options :
+    #   - lancer `python init_db.py` à la main ;
+    #   - ou définir RELOAD_CSV_ON_STARTUP=true sur Railway le temps d'un
+    #     démarrage, puis retirer la variable.
+    if os.getenv("RELOAD_CSV_ON_STARTUP", "").strip().lower() in ("1", "true", "yes", "oui"):
+        print("🔄 RELOAD_CSV_ON_STARTUP actif : rechargement des CSV...")
+        csv_path = Path(__file__).parent / "csv" / "csv_bdd"
+        main_creation_db(str(csv_path))
+        print("✅ Données CSV chargées avec succès.")
+    else:
+        print("⏭️  Chargement des CSV ignoré "
+              "(RELOAD_CSV_ON_STARTUP non défini) — démarrage immédiat.")
 
 # ============================================
 # MODELS PYDANTIC
