@@ -1,3 +1,5 @@
+import time
+
 import streamlit as st
 from src.components.components_views import *
 from src.api_client.api_client import *
@@ -26,19 +28,25 @@ def login_page(auth_manager, go_to=None):
                     st.success(message)
                     st.info("⏳ Connexion en cours…")
 
-                    # ⚠️ CORRECTIF PERSISTANCE — surtout PAS de st.rerun() ici.
+                    # ⚠️ CORRECTIF PERSISTANCE — l'ordre des deux lignes ci-dessous
+                    # est ce qui fait marcher "Rester connecté". Ne pas l'inverser.
                     #
-                    # auth_manager.login() vient d'appeler cookies.save(), qui
-                    # rend le composant Streamlit chargé d'écrire session_id
-                    # dans document.cookie. st.rerun() interrompt le run
-                    # immédiatement (RerunException) : le composant n'est jamais
-                    # envoyé au navigateur, le cookie n'est jamais écrit, la
-                    # valeur reste coincée dans st.session_state, et tout est
-                    # perdu au premier rafraîchissement de la page.
+                    # auth_manager.login() vient d'appeler cookies.save(), qui rend
+                    # le composant chargé d'écrire session_id dans document.cookie.
+                    # st.rerun() appelé juste après interrompt le run avant que le
+                    # navigateur ait eu le temps de monter l'iframe et d'écrire le
+                    # cookie : c'était le bug d'origine.
                     #
-                    # En laissant le run se terminer, le composant écrit le
-                    # cookie puis renvoie sa valeur à Streamlit, ce qui
-                    # déclenche de lui-même le rerun vers la page "home".
+                    # On laisse donc au navigateur le temps d'écrire, PUIS on
+                    # bascule. On ne peut pas attendre que le composant nous
+                    # prévienne : son JS fait "saveOnly || setComponentValue(...)",
+                    # autrement dit en mode sauvegarde il n'envoie jamais rien en
+                    # retour, donc il ne déclenche aucun rerun.
+                    #
+                    # Filet de sécurité : main.py rejoue toute écriture restée en
+                    # attente au début de chaque run.
+                    time.sleep(0.5)
+                    st.rerun()
                 else:
                     st.error(message)
 

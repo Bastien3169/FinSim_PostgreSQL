@@ -48,6 +48,12 @@ auth_manager = AuthManager()
 if not auth_manager.cookies.ready():
     st.stop()
 
+# Filet de sécurité : si une écriture de cookie est restée en attente parce que
+# le run précédent a été coupé avant que le navigateur ait pu l'appliquer, on la
+# rejoue. save() ne fait rien si la file est vide, et le CookieManager vient de
+# retirer de cette file tout ce qui est déjà présent dans le navigateur.
+auth_manager.cookies.save()
+
 # ---------------------------------------------------------
 # ⭐ RÉCUPÉRER LES QUERY PARAMS DEPUIS L'URL
 # ---------------------------------------------------------
