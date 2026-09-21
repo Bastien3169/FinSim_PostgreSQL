@@ -80,7 +80,7 @@ def admin_page(go_to):
         # Si un email est saisi, on effectue la recherche
         if search:
             # Utiliser la méthode get_user_by_email pour obtenir l'utilisateur correspondant
-            user = admin_manager.get_user_by_email_username(search)
+            user = admin_manager.search_user(search)
 
             # Si un utilisateur est trouvé
             if user:
@@ -94,7 +94,9 @@ def admin_page(go_to):
                         st.markdown(
                             f"<b style='color: #00B388;'>{header}</b>", unsafe_allow_html=True)
 
-                id, username, email, role, registration_date = user
+                id, username, email, role, registration_date = (
+                    user["id"], user["username"], user["email"],
+                    user["role"], user["registration_date"])
                 col1, col2, col3, col4, col5, col6, col7 = st.columns(
                     [1, 2, 3, 1, 2, 2, 2])
                 with col1:
@@ -168,7 +170,12 @@ def admin_page(go_to):
                     f"<b style='color: #00B388;'>{header}</b>", unsafe_allow_html=True)
 
         for user in admin_manager.get_all_users():
-            id, username, email, role, registration_date = user
+            # L'API renvoie des dicts. Depaqueter un dict donne ses CLES :
+            # email valait litteralement "email", d'ou une cle de bouton
+            # identique pour tous les utilisateurs et le crash Streamlit.
+            id, username, email, role, registration_date = (
+                user["id"], user["username"], user["email"],
+                user["role"], user["registration_date"])
             col1, col2, col3, col4, col5, col6, col7 = st.columns(
                 [1, 1, 2, 1, 2, 1, 1])
             with col1:
@@ -252,8 +259,9 @@ def admin_page(go_to):
                 "🔍 Rechercher un utilisateur (nom ou email)").lower()
 
             # Filtrage
-            filtered_users = [u for u in users if search_query in u[1].lower(
-            ) or search_query in u[2].lower()]
+            filtered_users = [u for u in users
+                              if search_query in u["username"].lower()
+                              or search_query in u["email"].lower()]
 
             if not filtered_users:
                 st.warning("Aucun utilisateur ne correspond à la recherche.")
@@ -263,8 +271,10 @@ def admin_page(go_to):
                     st.session_state.user_index = 0
 
                 # Données utilisateur affiché
-                id, username, email, role, registration_date = filtered_users[
-                    st.session_state.user_index]
+                _u = filtered_users[st.session_state.user_index]
+                id, username, email, role, registration_date = (
+                    _u["id"], _u["username"], _u["email"],
+                    _u["role"], _u["registration_date"])
 
                 st.markdown("---")
                 st.write(f"**🆔 ID :** {id}")

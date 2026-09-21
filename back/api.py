@@ -6,7 +6,7 @@ import sys
 import os
 from datetime import datetime
 from typing import Optional
-from fastapi import FastAPI, HTTPException, Cookie
+from fastapi import FastAPI, HTTPException, Cookie, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from fastapi.responses import HTMLResponse
@@ -139,10 +139,27 @@ def reset_password(data: PasswordResetConfirm):
     raise HTTPException(status_code=400, detail=message)
 
 # ============================================
+# SECURITE DES ROUTES ADMIN
+# ============================================
+def require_admin(session_id: Optional[str] = Cookie(None)):
+    """Dependance FastAPI : n'autorise que les administrateurs connectes.
+
+    Avant ce correctif les trois routes /api/admin/* etaient publiques :
+    n'importe qui connaissant l'URL pouvait lister tous les utilisateurs,
+    changer un mot de passe, se donner le role admin ou vider la table.
+    """
+    user = auth.get_current_user(session_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="Non authentifie")
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Acces reserve aux administrateurs")
+    return user
+
+# ============================================
 # ROUTES ADMIN
 # ============================================
 @app.get("/api/admin/users")
-def get_all_users():
+def get_all_users(_admin: dict = Depends(require_admin)):
     users = admin.get_all_users()
     return {
         "users": [
@@ -150,19 +167,19 @@ def get_all_users():
             for u in users]}
 
 @app.get("/api/admin/users/search")
-def search_user(query: str):
+def search_user(query: str, _admin: dict = Depends(require_admin)):
     user = admin.get_user_by_email_username(query)
     if not user:
         raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
     return {"id": user[0], "username": user[1], "email": user[2], "role": user[3], "registration_date": user[4]}
 
 @app.put("/api/admin/users/update")
-def update_user(data: UserUpdate):
+def update_user(data: UserUpdate, _admin: dict = Depends(require_admin)):
     message = admin.update_user(email=data.email, username=data.username, password=data.password, role=data.role)
     return {"success": True, "message": message}
 
 @app.delete("/api/admin/users/delete")
-def delete_user(email: str):
+def delete_user(email: str, _admin: dict = Depends(require_admin)):
     message = admin.delete_user(email)
     return {"success": True, "message": message}
 

@@ -72,6 +72,10 @@ if url_page:
 # chaque interaction. On récupère l'utilisateur une fois et on le transmet.
 user = auth_manager.get_current_user()
 
+# Les routes /api/admin/* exigent une session d'administrateur. On expose le
+# session_id ici pour que AdminManager puisse l'envoyer avec ses appels.
+st.session_state.session_id = auth_manager.cookies.get("session_id")
+
 if user:
     # ✅ Utilisateur déjà connecté via cookie
     st.session_state.auth = True
