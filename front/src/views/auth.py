@@ -77,4 +77,13 @@ def login_page(auth_manager, go_to=None):
                 else:
                     st.error(message)
 
+    st.markdown(
+        """<div class="main-container"><p style="text-align:center; font-weight:400; opacity:.85;">
+        📈 Plutôt trading ? Testez vos stratégies sur
+        <a href="https://backtesting.up.railway.app/" target="_blank" rel="noopener"
+           style="color:#00B388; font-weight:700;">Backtesting</a>.
+        </p></div>""",
+        unsafe_allow_html=True,
+    )
+
     footer()

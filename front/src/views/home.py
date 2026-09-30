@@ -4,6 +4,29 @@ from src.api_client.api_client import *
 from src.components.components_views import *
 
 
+BACKTESTING_URL = "https://backtesting.up.railway.app/"
+
+ENCART_BACKTESTING = f"""
+<div class="main-container">
+  <div style="border:2px solid #00B388; border-radius:10px; padding:18px 24px;
+              margin:40px auto 10px; max-width:760px;">
+    <div style="color:#00B388; font-size:1.3rem; font-weight:700; margin-bottom:4px;">
+      📈 Plutôt trading ?
+    </div>
+    <p style="padding:0; margin:0 0 14px;">
+      Construisez et testez vos stratégies (RSI, moyennes mobiles, MACD, Bollinger),
+      optimisez take profit et stop loss, et vérifiez qu'elles tiennent sur plusieurs actifs.
+    </p>
+    <a href="{BACKTESTING_URL}" target="_blank" rel="noopener"
+       style="display:inline-block; padding:8px 18px; border:1px solid #00B388;
+              border-radius:5px; color:#00B388; text-decoration:none; font-weight:600;">
+      Découvrir Backtesting →
+    </a>
+  </div>
+</div>
+"""
+
+
 def home_page(go_to, auth_manager):
 
     load_css()
@@ -16,11 +39,12 @@ def home_page(go_to, auth_manager):
     # ---------------------------------------------------------
     # IMAGE
     # ---------------------------------------------------------
-    image_path = "src/assets/images/finsim.png"
+    # Logo vectoriel (SVG) : net à toutes les tailles, fond transparent, couleurs du CSS
+    image_path = "src/assets/images/finsim_logo.svg"
     with open(image_path, "rb") as img_file:
         encoded = b64encode(img_file.read()).decode()
 
-    st.markdown(f""" <div class="main-container"><img src="data:image/png;base64,{encoded}" class="center-image"> </div> """, unsafe_allow_html=True,)
+    st.markdown(f""" <div class="main-container"><img src="data:image/svg+xml;base64,{encoded}" class="center-image" alt="FinSim"> </div> """, unsafe_allow_html=True,)
 
     # ---------------------------------------------------------
     # TEXTE INTRO
@@ -32,7 +56,7 @@ def home_page(go_to, auth_manager):
             Analysez les performances historiques des indices, actions, cryptos et ETF en un clin d'œil.<br>
             Simulez vos stratégies DCA (investissement progressif) ou Lump Sum (investissement en une fois).<br>
             Construisez votre portefeuille pour simuler des rendements passés.<br>
-            Outil pédagogique sans risque : apprenez à investir sans conseil financier.<br><br>
+            Outil pédagogique sans risque : aucun conseil en investissement.<br><br>
             Bonne visite !
             </p>
         </div>
@@ -103,6 +127,11 @@ def home_page(go_to, auth_manager):
                 go_to("admin")
                 st.rerun()
     
+    # ---------------------------------------------------------
+    # ENCART BACKTESTING (site frère, orienté trading)
+    # ---------------------------------------------------------
+    st.markdown(ENCART_BACKTESTING, unsafe_allow_html=True)
+
     # ---------------------------------------------------------
     # POLITIQUE DE CONFIDENTIALITÉ
     # ---------------------------------------------------------

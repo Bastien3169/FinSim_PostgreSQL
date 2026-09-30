@@ -6,6 +6,17 @@ import streamlit as st
 st.set_page_config(layout="wide", page_title="FinSim", page_icon="🏛️")
 
 # ---------------------------------------------------------
+# VARIABLES D'ENVIRONNEMENT (.env)
+# ---------------------------------------------------------
+# Doit passer AVANT les imports ci-dessous : api_client.py lit API_URL dès son
+# import. Sans ça, le .env n'est jamais lu et API_URL vaut localhost:8000.
+# load_dotenv n'écrase pas une variable déjà définie : sur Railway, la variable
+# du service reste prioritaire.
+import os
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+
+# ---------------------------------------------------------
 # IMPORTS
 # ---------------------------------------------------------
 from src.views.auth import login_page
